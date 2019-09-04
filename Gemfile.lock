@@ -35,7 +35,7 @@ GEM
     public_suffix (4.0.1)
     rack (2.0.7)
     rainbow (3.0.0)
-    rake (10.5.0)
+    rake (12.3.3)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -83,7 +83,7 @@ DEPENDENCIES
   bundler (~> 1.17)
   et_ccd_client!
   rack (~> 2.0, >= 2.0.7)
-  rake (~> 10.0)
+  rake (~> 12.3)
   rspec (~> 3.0)
   rubocop (~> 0.71.0)
   rubocop-rspec (~> 1.33)
