@@ -5,7 +5,7 @@ PATH
       addressable (~> 2.6)
       connection_pool (~> 2.2, >= 2.2.2)
       rest-client (~> 2.0, >= 2.0.2)
-      rotp (~> 5.0)
+      rotp (>= 5, < 7)
       webmock (~> 3.6)
 
 GEM
@@ -41,8 +41,8 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rotp (5.1.0)
-      addressable (~> 2.5)
+    rotp (6.0.0)
+      addressable (~> 2.7)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
