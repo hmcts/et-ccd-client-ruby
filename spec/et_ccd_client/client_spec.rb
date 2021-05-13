@@ -305,6 +305,10 @@ RSpec.describe EtCcdClient::Client do
 
   end
 
+  describe '#caseworker_case' do
+
+  end
+
   describe "#upload_file_from_filename" do
     def parse_multipart(request)
       Rack::Multipart::Parser.parse StringIO.new(request.body), request.headers['Content-Length'].to_i, request.headers['Content-Type'], Rack::Multipart::Parser::TEMPFILE_FACTORY, Rack::Multipart::Parser::BUFSIZE, Rack::Utils.default_query_parser

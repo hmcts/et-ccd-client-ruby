@@ -30,6 +30,10 @@ module EtCcdClient
       "#{data_store_base_url}#{cases_path}"
     end
 
+    def case_url
+      "#{cases_url}/{case_id}"
+    end
+
     def cases_pagination_metadata_url
       "#{data_store_base_url}/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata{?query*}"
     end

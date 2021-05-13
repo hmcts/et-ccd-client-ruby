@@ -95,6 +95,19 @@ module EtCcdClient
       end
     end
 
+    # Find a case by its id
+    # @param [String] case_id The id to find
+    # @param [String] case_type_id The case type ID to set the search scope to
+    #
+    # @return [Array<Hash>] The json response from the server
+    def caseworker_case(case_id, case_type_id:, extra_headers: {})
+      logger.tagged('EtCcdClient::Client') do
+        tpl = Addressable::Template.new(config.case_url)
+        url = tpl.expand(uid: idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, case_id: case_id).to_s
+        get_request_with_login(url, log_subject: 'Caseworker get by id', extra_headers: extra_headers.merge(headers_from_idam_client))
+      end
+    end
+
     # Search for the latest case matching the reference.  Useful for testing
     # @param [String] reference The reference number to search for
     # @param [String] case_type_id The case type ID to set the search scope to

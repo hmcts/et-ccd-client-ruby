@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    et_ccd_client (0.3.3)
+    et_ccd_client (0.3.4)
       addressable (~> 2.6)
       connection_pool (~> 2.2, >= 2.2.2)
       rest-client (~> 2.0, >= 2.0.2)
@@ -14,7 +14,7 @@ GEM
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.0)
-    connection_pool (2.2.4)
+    connection_pool (2.2.5)
     crack (0.4.5)
       rexml
     diff-lcs (1.3)
