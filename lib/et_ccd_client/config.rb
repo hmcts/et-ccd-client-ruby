@@ -23,7 +23,11 @@ module EtCcdClient
     end
 
     def create_case_url
-      "#{data_store_base_url}/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
+      "#{data_store_base_url}#{create_case_path}"
+    end
+
+    def create_case_path
+      "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
     end
 
     def cases_url
@@ -39,7 +43,11 @@ module EtCcdClient
     end
 
     def initiate_case_url
-      "#{data_store_base_url}/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/event-triggers/{etid}/token"
+      "#{data_store_base_url}#{initiate_case_path}"
+    end
+
+    def initiate_case_path
+      "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/event-triggers/{etid}/token"
     end
 
     def initiate_document_upload_url

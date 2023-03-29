@@ -146,6 +146,34 @@ module EtCcdClient
       end
     end
 
+    # Initiate the case ready for creation
+    # @param [String] case_type_id
+    #
+    # @return [Hash] The json response
+    def caseworker_start_case_creation(case_type_id:, extra_headers: {})
+      logger.tagged('EtCcdClient::Client') do
+        path = initiate_case_path(case_type_id, config.initiate_claim_event_id)
+        url = "#{config.gateway_api_url}/aggregated#{path}"
+
+        get_request(url, log_subject: 'Start case creation', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+      end
+    end
+
+    # @param [Hash] data
+    # @param [String] case_type_id
+    #
+    # @return [Hash] The json response
+    def caseworker_case_create(data, case_type_id:, extra_headers: {})
+      logger.tagged('EtCcdClient::Client') do
+        tpl = Addressable::Template.new(config.create_case_path)
+        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id).to_s
+        url = "#{config.gateway_api_url}/aggregated#{path}"
+        post_request(url, data, log_subject: 'Case worker create case', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+      end
+    end
+
+
+
 
     private
 
@@ -154,6 +182,11 @@ module EtCcdClient
     def reverse_rewrite_document_store_urls(json)
       source_host, source_port, dest_host, dest_port = config.document_store_url_rewrite
       JSON.parse(JSON.generate(json).gsub(/(https?):\/\/#{Regexp.quote dest_host}:#{Regexp.quote dest_port}/, "\\1://#{source_host}:#{source_port}"))
+    end
+
+    def initiate_case_path(case_type_id, event_id)
+      tpl = Addressable::Template.new(config.initiate_case_path)
+      tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, etid: event_id).to_s
     end
   end
 end
