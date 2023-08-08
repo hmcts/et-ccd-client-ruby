@@ -43,7 +43,7 @@ module EtCcdClient
 
     def fetch_user_details
       url = config.user_details_url
-      get_request(url, extra_headers: {'Accept' => 'application/json', 'Authorization' => user_token}, log_subject: 'Idam get user details')
+      get_request(url, extra_headers: { 'Accept' => 'application/json', 'Authorization' => user_token }, log_subject: 'Idam get user details')
     end
 
     def otp

@@ -5,14 +5,9 @@ module EtCcdClient
   class Config
     include Singleton
 
-    attr_accessor :auth_base_url, :idam_base_url, :data_store_base_url, :ecm_base_url, :case_management_ui_base_url, :document_store_base_url, :gateway_api_url, :document_store_url_rewrite
-    attr_accessor :user_role, :user_id
-    attr_accessor :jurisdiction_id, :microservice, :microservice_secret
-    attr_accessor :logger
-    attr_accessor :verify_ssl, :use_sidam, :sidam_username, :sidam_password
-    attr_accessor :case_management_ui_redirect_url
-    attr_accessor :pool_size, :pool_timeout
-    attr_accessor :proxy
+    attr_accessor :auth_base_url, :idam_base_url, :data_store_base_url, :ecm_base_url, :case_management_ui_base_url, :document_store_base_url, :gateway_api_url,
+                  :document_store_url_rewrite, :user_role, :user_id, :jurisdiction_id, :microservice, :microservice_secret, :logger, :verify_ssl, :use_sidam, :sidam_username,
+                  :sidam_password, :case_management_ui_redirect_url, :pool_size, :pool_timeout, :proxy
 
     def idam_service_token_exchange_url
       "#{auth_base_url}/lease"
@@ -92,9 +87,9 @@ module EtCcdClient
 
     private
 
-    def initialize
+    def initialize # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       self.auth_base_url = 'http://localhost:4502'
-      self.idam_base_url =  'http://localhost:4501'
+      self.idam_base_url = 'http://localhost:4501'
       self.data_store_base_url = 'http://localhost:4452'
       self.document_store_base_url = 'http://localhost:4506'
       self.ecm_base_url = 'http://unknown:4506'
@@ -103,7 +98,7 @@ module EtCcdClient
       self.case_management_ui_base_url = 'http://localhost:3451'
       self.gateway_api_url = 'http://localhost:3453'
       self.user_id = 22
-      self.user_role = 'caseworker,caseworker-test,caseworker-employment-tribunal-manchester,caseworker-employment,caseworker-employment-tribunal-manchester-caseofficer,caseworker-publiclaw-localAuthority'
+      self.user_role = 'caseworker,caseworker-test,caseworker-employment-tribunal-manchester,caseworker-employment,caseworker-employment-tribunal-manchester-caseofficer,caseworker-publiclaw-localAuthority' # rubocop:disable Metrics/LineLength
       self.jurisdiction_id = 'EMPLOYMENT'
       self.microservice = 'ccd_gw'
       self.microservice_secret = 'AAAAAAAAAAAAAAAC'

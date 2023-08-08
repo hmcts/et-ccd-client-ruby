@@ -3,15 +3,15 @@ module EtCcdClient
 
     private
 
-    def get_request_with_login(*args)
+    def get_request_with_login(*args, **kw_args)
       login_on_denial do
-        get_request(*args)
+        get_request(*args, **kw_args)
       end
     end
 
-    def post_request_with_login(*args)
+    def post_request_with_login(*args, **kw_args)
       login_on_denial do
-        post_request(*args)
+        post_request(*args, **kw_args)
       end
     end
 
@@ -19,7 +19,7 @@ module EtCcdClient
       retried = false
       begin
         yield
-      rescue EtCcdClient::Exceptions::Forbidden, EtCcdClient::Exceptions::Unauthorized => e
+      rescue EtCcdClient::Exceptions::Forbidden, EtCcdClient::Exceptions::Unauthorized
         raise if retried
 
         retried = true

@@ -29,10 +29,9 @@ module EtCcdClient
     # @return [Array<Hash>] The json response from the server
     def caseworker_search_by_reference(reference, case_type_id:, page: 1, sort_direction: 'desc')
       logger.tagged('EtCcdClient::UiClient') do
-        tpl = Addressable::Template.new(config.cases_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: { 'case.feeGroupReference' => reference, page: page, 'sortDirection' => sort_direction }).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        resp = get_request(url, log_subject: 'Caseworker search by reference', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+        resp = get_request(cases_url(case_type_id, query: { 'case.feeGroupReference' => reference, page: page, 'sortDirection' => sort_direction }),
+                           log_subject: 'Caseworker search by reference', extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                           cookies: { accessToken: ui_idam_client.user_token })
         unless config.document_store_url_rewrite == false
           resp = reverse_rewrite_document_store_urls(resp)
         end
@@ -45,8 +44,7 @@ module EtCcdClient
     # @param [String] case_type_id The case type ID to set the search scope to
     # @return [Hash] The case object returned from the server
     def caseworker_search_latest_by_reference(reference, case_type_id:)
-      results = caseworker_search_by_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc')
-      results.first
+      caseworker_search_by_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc').first
     end
 
     # Search for cases by ethos case reference - useful for testing
@@ -58,10 +56,9 @@ module EtCcdClient
     # @return [Array<Hash>] The json response from the server
     def caseworker_search_by_ethos_case_reference(reference, case_type_id:, page: 1, sort_direction: 'desc')
       logger.tagged('EtCcdClient::UiClient') do
-        tpl = Addressable::Template.new(config.cases_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: { 'case.ethosCaseReference' => reference, page: page, 'sortDirection' => sort_direction }).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        resp = get_request(url, log_subject: 'Caseworker search by ethos case reference', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+        resp = get_request(cases_url(case_type_id, query: { 'case.ethosCaseReference' => reference, page: page, 'sortDirection' => sort_direction }),
+                           log_subject: 'Caseworker search by ethos case reference', extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                           cookies: { accessToken: ui_idam_client.user_token })
         unless config.document_store_url_rewrite == false
           resp = reverse_rewrite_document_store_urls(resp)
         end
@@ -74,8 +71,7 @@ module EtCcdClient
     # @param [String] case_type_id The case type ID to set the search scope to
     # @return [Hash] The case object returned from the server
     def caseworker_search_latest_by_ethos_case_reference(reference, case_type_id:)
-      results = caseworker_search_by_ethos_case_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc')
-      results.first
+      caseworker_search_by_ethos_case_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc').first
     end
 
     # Search for cases by multiples reference - useful for testing
@@ -87,11 +83,9 @@ module EtCcdClient
     # @return [Array<Hash>] The json response from the server
     def caseworker_search_by_multiple_reference(reference, case_type_id:, page: 1, sort_direction: 'desc')
       logger.tagged('EtCcdClient::UiClient') do
-        tpl = Addressable::Template.new(config.cases_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: { 'case.multipleReference' => reference, page: page, 'sortDirection' => sort_direction }).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        resp = get_request(url, log_subject: 'Case worker search by multiple reference', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
-        resp["results"]
+        get_request(cases_url(case_type_id, query: { 'case.multipleReference' => reference, page: page, 'sortDirection' => sort_direction }),
+                    log_subject: 'Case worker search by multiple reference', extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                    cookies: { accessToken: ui_idam_client.user_token })["results"]
       end
     end
 
@@ -100,8 +94,7 @@ module EtCcdClient
     # @param [String] case_type_id The case type ID to set the search scope to
     # @return [Hash] The case object returned from the server
     def caseworker_search_latest_by_multiple_reference(reference, case_type_id:)
-      results = caseworker_search_by_multiple_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc')
-      results.first
+      caseworker_search_by_multiple_reference(reference, case_type_id: case_type_id, page: 1, sort_direction: 'desc').first
     end
 
     # Search for cases by bulk case title - useful for testing
@@ -113,11 +106,9 @@ module EtCcdClient
     # @return [Array<Hash>] The json response from the server
     def caseworker_search_by_bulk_case_title(case_title, case_type_id:, page: 1, sort_direction: 'desc')
       logger.tagged('EtCcdClient::UiClient') do
-        tpl = Addressable::Template.new(config.cases_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: { 'case.multipleName' => case_title, page: page, 'sortDirection' => sort_direction }).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        resp = get_request(url, log_subject: 'Case worker search by bulk case title', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
-        resp["results"]
+        get_request(cases_url(case_type_id, query: { 'case.multipleName' => case_title, page: page, 'sortDirection' => sort_direction }),
+                    log_subject: 'Case worker search by bulk case title', extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                    cookies: { accessToken: ui_idam_client.user_token })["results"]
       end
     end
 
@@ -126,8 +117,7 @@ module EtCcdClient
     # @param [String] case_type_id The case type ID to set the search scope to
     # @return [Hash] The case object returned from the server
     def caseworker_search_latest_by_bulk_case_title(case_title, case_type_id:)
-      results = caseworker_search_by_bulk_case_title(case_title, case_type_id: case_type_id, page: 1, sort_direction: 'desc')
-      results.first
+      caseworker_search_by_bulk_case_title(case_title, case_type_id: case_type_id, page: 1, sort_direction: 'desc').first
     end
 
     # List all cases (paginated)
@@ -138,11 +128,9 @@ module EtCcdClient
     # @return [Array<Hash>] The json response from the server
     def caseworker_list_cases(case_type_id:, page: 1, sort_direction: 'desc')
       logger.tagged('EtCcdClient::UiClient') do
-        tpl = Addressable::Template.new(config.cases_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: { page: page, 'sortDirection' => sort_direction }).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        resp = get_request(url, log_subject: 'List all cases', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
-        resp["results"]
+        get_request(cases_url(case_type_id, query: { page: page, 'sortDirection' => sort_direction }),
+                    log_subject: 'List all cases', extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                    cookies: { accessToken: ui_idam_client.user_token })["results"]
       end
     end
 
@@ -150,12 +138,11 @@ module EtCcdClient
     # @param [String] case_type_id
     #
     # @return [Hash] The json response
-    def caseworker_start_case_creation(case_type_id:, extra_headers: {})
+    def caseworker_start_case_creation(case_type_id:, extra_headers: {}) # rubocop:disable Lint/UnusedMethodArgument
       logger.tagged('EtCcdClient::Client') do
-        path = initiate_case_path(case_type_id, config.initiate_claim_event_id)
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-
-        get_request(url, log_subject: 'Start case creation', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+        get_request(initiate_case_url(case_type_id, config.initiate_claim_event_id), log_subject: 'Start case creation',
+                                                                                     extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                                                                                     cookies: { accessToken: ui_idam_client.user_token })
       end
     end
 
@@ -163,17 +150,13 @@ module EtCcdClient
     # @param [String] case_type_id
     #
     # @return [Hash] The json response
-    def caseworker_case_create(data, case_type_id:, extra_headers: {})
+    def caseworker_case_create(data, case_type_id:, extra_headers: {}) # rubocop:disable Lint/UnusedMethodArgument
       logger.tagged('EtCcdClient::Client') do
-        tpl = Addressable::Template.new(config.create_case_path)
-        path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id).to_s
-        url = "#{config.gateway_api_url}/aggregated#{path}"
-        post_request(url, data, log_subject: 'Case worker create case', extra_headers: { content_type: 'application/json', accept: 'application/json' }, cookies: { accessToken: ui_idam_client.user_token })
+        post_request(create_case_url(case_type_id), data, log_subject: 'Case worker create case',
+                                                                    extra_headers: { content_type: 'application/json', accept: 'application/json' },
+                                                                    cookies: { accessToken: ui_idam_client.user_token })
       end
     end
-
-
-
 
     private
 
@@ -181,12 +164,27 @@ module EtCcdClient
 
     def reverse_rewrite_document_store_urls(json)
       source_host, source_port, dest_host, dest_port = config.document_store_url_rewrite
-      JSON.parse(JSON.generate(json).gsub(/(https?):\/\/#{Regexp.quote dest_host}:#{Regexp.quote dest_port}/, "\\1://#{source_host}:#{source_port}"))
+      JSON.parse(JSON.generate(json).gsub(%r{(https?)://#{Regexp.quote dest_host}:#{Regexp.quote dest_port}}, "\\1://#{source_host}:#{source_port}"))
     end
 
-    def initiate_case_path(case_type_id, event_id)
+    def initiate_case_url(case_type_id, event_id)
       tpl = Addressable::Template.new(config.initiate_case_path)
-      tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, etid: event_id).to_s
+      path = tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, etid: event_id).to_s
+      "#{config.gateway_api_url}/aggregated#{path}"
+    end
+
+    def create_case_url(case_type_id)
+      path = Addressable::Template.new(config.create_case_path).then do |tpl|
+        tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id).to_s
+      end
+      "#{config.gateway_api_url}/aggregated#{path}"
+    end
+
+    def cases_url(case_type_id, query:)
+      path = Addressable::Template.new(config.cases_path).then do |tpl|
+        tpl.expand(uid: ui_idam_client.user_details['id'], jid: config.jurisdiction_id, ctid: case_type_id, query: query).to_s
+      end
+      "#{config.gateway_api_url}/aggregated#{path}"
     end
   end
 end

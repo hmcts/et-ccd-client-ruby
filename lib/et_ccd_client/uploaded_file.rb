@@ -8,6 +8,7 @@ module EtCcdClient
 
     def initialize(path, content_type: "text/plain", binary: false, original_filename: File.basename(path))
       raise "#{path} file does not exist" unless ::File.exist?(path)
+
       @content_type = content_type
       @original_filename = original_filename
       @tempfile = Tempfile.new(encoding: Encoding::BINARY)
@@ -22,14 +23,18 @@ module EtCcdClient
     def to_s
       inspect
     end
-    alias_method :local_path, :path
+    alias local_path path
 
-    def respond_to?(*args)
-      super or @tempfile.respond_to?(*args)
+    def respond_to?(*args, **kw_args)
+      super or @tempfile.respond_to?(*args, **kw_args)
     end
 
-    def method_missing(method_name, *args, &block) #:nodoc:
-      @tempfile.__send__(method_name, *args, &block)
+    def method_missing(method_name, *args, **kw_args, &block) # :nodoc:
+      @tempfile.__send__(method_name, *args, **kw_args, &block)
+    end
+
+    def respond_to_missing?(method_name, include_private = false) # :nodoc:
+      @tempfile.respond_to?(method_name, include_private) || super
     end
   end
 
