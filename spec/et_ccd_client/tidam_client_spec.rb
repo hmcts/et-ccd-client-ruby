@@ -3,6 +3,7 @@ require 'et_ccd_client'
 require 'rotp'
 RSpec.describe EtCcdClient::TidamClient do
   subject(:client) { described_class.new config: mock_config }
+
   let(:test_secret) { 'AAAAAAAAAAAAAAAC' }
   let(:mock_config) { instance_double(EtCcdClient::Config, mock_config_values) }
   let(:mock_config_values) do
@@ -36,13 +37,10 @@ RSpec.describe EtCcdClient::TidamClient do
     it "calls the service auth provider service with a otp" do
 
       # Arrange - Setup the stubs
-      totp = ROTP::TOTP.new(test_secret)
-      stub_request(:post, "http://auth.mock.com/lease").with(body: {'microservice': 'mockmicroservice', 'oneTimePassword': an_instance_of(String)}).to_return do |request|
-        payload = JSON.parse(request.body)
-        expect(totp.verify(payload['oneTimePassword'], drift_behind: 15)).not_to be_nil
+      stub_request(:post, "http://auth.mock.com/lease").with(body: { 'microservice': 'mockmicroservice', 'oneTimePassword': an_instance_of(String) }).to_return do
         { body: "myservicetoken" }
       end
-      stub_request(:post, "http://idam.mock.com/testing-support/lease").with(body: {'id': 22, role: 'rolestuff'}).to_return(body: "myusertoken")
+      stub_request(:post, "http://idam.mock.com/testing-support/lease").with(body: { 'id': 22, role: 'rolestuff' }).to_return(body: "myusertoken")
 
       # Act
       client.login(user_id: 22, role: 'rolestuff')
@@ -51,6 +49,20 @@ RSpec.describe EtCcdClient::TidamClient do
       expect(client).to have_attributes service_token: 'myservicetoken', user_token: 'myusertoken'
     end
 
+    it "has a valid otp" do
+
+      # Arrange - Setup the stubs
+      totp = ROTP::TOTP.new(test_secret)
+      stub_request(:post, "http://auth.mock.com/lease").with(body: { 'microservice': 'mockmicroservice', 'oneTimePassword': an_instance_of(String) }).to_return do |request|
+        payload = JSON.parse(request.body)
+        expect(totp.verify(payload['oneTimePassword'], drift_behind: 15)).not_to be_nil
+        { body: "myservicetoken" }
+      end
+      stub_request(:post, "http://idam.mock.com/testing-support/lease").with(body: { 'id': 22, role: 'rolestuff' }).to_return(body: "myusertoken")
+
+      # Act
+      client.login(user_id: 22, role: 'rolestuff')
+    end
 
   end
 

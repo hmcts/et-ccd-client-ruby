@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'et_ccd_client'
 require 'rack'
 
-
 RSpec.describe EtCcdClient::Client do
   subject(:client) { described_class.new(idam_client: mock_idam_client, config: mock_config) }
 
@@ -159,6 +158,7 @@ RSpec.describe EtCcdClient::Client do
       let(:action) { -> { client.caseworker_start_case_creation(case_type_id: 'mycasetypeid') } }
     end
   end
+
   describe "#caseworker_start_bulk_creation" do
     it "performs the correct http request" do
       # Arrange - stub the url
@@ -229,17 +229,17 @@ RSpec.describe EtCcdClient::Client do
 
     it_behaves_like 'common POST logging examples', log_subject: 'Case worker create case' do
       let(:url) { "http://data.mock.com/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases" }
-      let(:action) { -> (data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
+      let(:action) { ->(data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
     end
 
     it_behaves_like "common POST exception handling examples" do
       let(:url) { "http://data.mock.com/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases" }
-      let(:action) { -> (data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
+      let(:action) { ->(data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
     end
 
     it_behaves_like "common POST auto login examples" do
       let(:url) { "http://data.mock.com/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases" }
-      let(:action) { -> (data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
+      let(:action) { ->(data = {}) { client.caseworker_case_create(data, case_type_id: 'mycasetypeid') } }
     end
   end
 
@@ -261,11 +261,12 @@ RSpec.describe EtCcdClient::Client do
         )
       }
     end
+
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:post, mock_config_values[:start_multiple_url]).
-        with(headers: { "Content-Type": "application/json" }, body: hash_including(expected_body)).
-        to_return(body: response_data.to_json, headers: default_response_headers, status: 200)
+             with(headers: { "Content-Type": "application/json" }, body: hash_including(expected_body)).
+             to_return(body: response_data.to_json, headers: default_response_headers, status: 200)
 
       # Act - Call the method
       client.start_multiple(case_type_id: 'mycasetypeid', quantity: 100)
@@ -289,23 +290,8 @@ RSpec.describe EtCcdClient::Client do
 
     it_behaves_like "common POST auto login examples" do
       let(:url) { mock_config_values[:start_multiple_url] }
-      let(:action) { -> (data = {}) { client.start_multiple(case_type_id: 'mycasetypeid', quantity: 100) } }
+      let(:action) { ->(_data = {}) { client.start_multiple(case_type_id: 'mycasetypeid', quantity: 100) } }
     end
-
-  end
-  describe "#caseworker_search_by_reference" do
-
-  end
-
-  describe "#caseworker_search_latest_by_reference" do
-
-  end
-
-  describe "#caseworker_cases_pagination_metadata" do
-
-  end
-
-  describe '#caseworker_case' do
 
   end
 
@@ -315,7 +301,7 @@ RSpec.describe EtCcdClient::Client do
     end
 
     let(:example_response) do
-      example_response = {
+      {
         "_embedded" => {
           "documents" => [
             {
@@ -366,8 +352,8 @@ RSpec.describe EtCcdClient::Client do
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
-        to_return(body: '{}', headers: default_response_headers, status: 200)
+             with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
+             to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
       client.upload_file_from_filename(File.absolute_path('../fixtures/et1.pdf', __dir__), content_type: 'application/pdf')
@@ -380,7 +366,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - stub the url
       last_request = nil
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}) {|request| last_request = request}.
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }) { |request| last_request = request }.
         to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -394,7 +380,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - stub the url
       last_request = nil
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}) {|request| last_request = request}.
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }) { |request| last_request = request }.
         to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -409,7 +395,7 @@ RSpec.describe EtCcdClient::Client do
     it "returns the correct hash from the json without any urls modified" do
       # Arrange - stub the url
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -424,7 +410,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - change the config and stub the url
       mock_config_values['document_store_url_rewrite'] = 'localhost:4506:dm-store:8080'.split(':')
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -445,7 +431,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - change the config and stub the url
       mock_config_values['document_store_url_rewrite'] = 'localhost:4506:dm-store:8080'.split(':')
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -460,7 +446,6 @@ RSpec.describe EtCcdClient::Client do
         end
       end
     end
-
 
     it "uses a tagged logger" do
       # Arrange - stub the url
@@ -534,13 +519,11 @@ RSpec.describe EtCcdClient::Client do
       let(:action) { -> { client.upload_file_from_filename(File.absolute_path('../fixtures/et1.pdf', __dir__), content_type: 'application/pdf') } }
     end
 
-
-
   end
 
   describe "#upload_file_from_url" do
     let(:example_response) do
-      example_response = {
+      {
         "_embedded" => {
           "documents" => [
             {
@@ -594,14 +577,14 @@ RSpec.describe EtCcdClient::Client do
 
     before do
       stub_request(:get, "http://external.server/et1.pdf").
-        to_return(status: 200, body: File.new(File.absolute_path('../fixtures/et1.pdf', __dir__)), headers: {'Content-Type' => 'application/pdf'})
+        to_return(status: 200, body: File.new(File.absolute_path('../fixtures/et1.pdf', __dir__)), headers: { 'Content-Type' => 'application/pdf' })
     end
 
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
-        to_return(body: '{}', headers: default_response_headers, status: 200)
+             with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
+             to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
       client.upload_file_from_url('http://external.server/et1.pdf', content_type: 'application/pdf')
@@ -614,7 +597,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - stub the url
       last_request = nil
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}) {|request| last_request = request}.
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }) { |request| last_request = request }.
         to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -628,7 +611,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - stub the url
       last_request = nil
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}) {|request| last_request = request}.
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }) { |request| last_request = request }.
         to_return(body: '{}', headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -643,7 +626,7 @@ RSpec.describe EtCcdClient::Client do
     it "returns the correct hash from the json without any urls modified" do
       # Arrange - stub the url
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -658,7 +641,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - change the config and stub the url
       mock_config_values['document_store_url_rewrite'] = 'localhost:4506:dm-store:8080'.split(':')
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -679,7 +662,7 @@ RSpec.describe EtCcdClient::Client do
       # Arrange - change the config and stub the url
       mock_config_values['document_store_url_rewrite'] = 'localhost:4506:dm-store:8080'.split(':')
       stub_request(:post, "http://documents.mock.com/documents").
-        with(headers: { 'Serviceauthorization'=>'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => /\Amultipart\/form-data/}).
+        with(headers: { 'Serviceauthorization' => 'Bearer mockservicetoken', 'Authorization' => 'Bearer mockusertoken', 'Content-Type' => %r{\Amultipart/form-data} }).
         to_return(body: JSON.generate(example_response), headers: default_response_headers, status: 200)
 
       # Act - Call the method
@@ -762,7 +745,6 @@ RSpec.describe EtCcdClient::Client do
       expect(action).to raise_exception(EtCcdClient::Exceptions::Base, "404 Not Found - Not found ('http://documents.mock.com/documents')")
     end
 
-
   end
 
   describe ".use" do
@@ -771,6 +753,7 @@ RSpec.describe EtCcdClient::Client do
       stub_request(:post, "http://localhost:4501/loginUser").to_return(body: '{"access_token":"usertoken"}', status: 200)
       stub_request(:get, "http://localhost:4501/details").to_return(body: '{"id":"userid","roles":["role1","role2"]}', status: 200)
     end
+
     it 'fetches a connection from the pool' do
       # Act
       described_class.use do |client|
@@ -784,17 +767,17 @@ RSpec.describe EtCcdClient::Client do
       stub_request(:get, "http://localhost:4452/caseworkers/userid/jurisdictions/EMPLOYMENT/case-types/anything/event-triggers/initiateCase/token").
         with(
           headers: {
-            'Authorization'=>'Bearer usertoken',
-            'Serviceauthorization'=>'Bearer servicetoken',
-            'User-Id'=>'userid',
-            'User-Roles'=>'role1,role2'
-          }).
+            'Authorization' => 'Bearer usertoken',
+            'Serviceauthorization' => 'Bearer servicetoken',
+            'User-Id' => 'userid',
+            'User-Roles' => 'role1,role2'
+          }
+        ).
         to_return(status: 200, body: "{}", headers: {})
 
       described_class.use do |client|
         # Act - Try and use an endpoint
         client.caseworker_start_case_creation(case_type_id: 'anything')
-
 
       end
     end
@@ -826,13 +809,13 @@ RSpec.describe EtCcdClient::Client do
 
       # Act
       thread1 = Thread.new do
-        described_class.use do |client1|
+        described_class.use do |_client1|
           Thread.stop
         end
       end
 
       thread2 = Thread.new do
-        described_class.use do |client2|
+        described_class.use do |_client2|
           Thread.stop
         end
       end

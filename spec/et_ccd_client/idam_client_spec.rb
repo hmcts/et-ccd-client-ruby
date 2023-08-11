@@ -51,6 +51,23 @@ RSpec.describe EtCcdClient::IdamClient do
     it "calls the service auth provider service with a otp" do
 
       # Arrange - Setup the stubs
+      user_details = { 'id' => 'mockid', 'roles' => ['mockrole1', 'mockrole2'] }
+      stub_request(:post, "http://auth.mock.com/lease").with(body: { 'microservice': 'mockmicroservice', 'oneTimePassword': an_instance_of(String) }).to_return do |_request|
+        { body: "myservicetoken" }
+      end
+      stub_request(:post, "http://idam.mock.com/loginUser").with(body: { 'username': 'm@m.com', password: 'p' }).to_return(body: mock_positive_response)
+      stub_request(:get, "http://idam.mock.com/details").with(headers: { 'Accept' => 'application/json', 'Authorization' => 'myusertoken' }).to_return(status: 200, body: user_details.to_json)
+
+      # Act
+      client.login(username: 'm@m.com', password: 'p')
+
+      # Assert - Make sure the tokens are available to others
+      expect(client).to have_attributes service_token: 'myservicetoken', user_token: 'myusertoken', user_details: user_details
+    end
+
+    it "validates the otp" do
+
+      # Arrange - Setup the stubs
       totp = ROTP::TOTP.new(test_secret)
       user_details = { 'id' => 'mockid', 'roles' => ['mockrole1', 'mockrole2'] }
       stub_request(:post, "http://auth.mock.com/lease").with(body: { 'microservice': 'mockmicroservice', 'oneTimePassword': an_instance_of(String) }).to_return do |request|
@@ -63,9 +80,6 @@ RSpec.describe EtCcdClient::IdamClient do
 
       # Act
       client.login(username: 'm@m.com', password: 'p')
-
-      # Assert - Make sure the tokens are available to others
-      expect(client).to have_attributes service_token: 'myservicetoken', user_token: 'myusertoken', user_details: user_details
     end
   end
 end

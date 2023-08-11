@@ -20,6 +20,7 @@ module EtCcdClient
         self.original_exception = original_exception
         self.url = url
         self.request = request
+        super(original_exception.message)
       end
 
       def response
@@ -27,17 +28,17 @@ module EtCcdClient
       end
 
       def to_s
-        json = JSON.parse(response.body) rescue JSON::JSONError
+        json = begin
+          JSON.parse(response.body)
+        rescue StandardError
+          JSON::JSONError
+        end
         message = if json.nil? || json == JSON::JSONError
-          ''
-        else
-          json['message'] || json['error'] || ''
-        end
-        if url
-          "#{original_exception.message} - #{message} ('#{url}')"
-        else
-          "#{original_exception.message} - #{message}"
-        end
+                    ''
+                  else
+                    json['message'] || json['error'] || ''
+                  end
+        message_with_original(message, url)
       end
 
       private
@@ -46,6 +47,14 @@ module EtCcdClient
 
       def request=(request)
         @request = request&.args
+      end
+
+      def message_with_original(message, url)
+        if url
+          "#{original_exception.message} - #{message} ('#{url}')"
+        else
+          "#{original_exception.message} - #{message}"
+        end
       end
     end
   end

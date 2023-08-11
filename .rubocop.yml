@@ -36,7 +36,7 @@ Style/AsciiComments:
   Enabled: true
   Exclude:
     - 'spec/**/*'
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Enabled: true
 # Don't worry about long methods in specs.
 Metrics/MethodLength:
@@ -54,7 +54,7 @@ Layout/AccessModifierIndentation:
 
 # Just indent parameters by two spaces. It's less volatile if methods change,
 # and there's less busy work lining things up.
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
 Style/ClassAndModuleChildren:
@@ -171,9 +171,6 @@ Layout/EmptyLineAfterMagicComment:
 # HttpPositionalArguments is rails 5 only
 # https://github.com/bbatsov/rubocop/issues/3629
 # ---------------
-Rails/HttpPositionalArguments:
-  Enabled: false
-
 RSpec/MultipleExpectations:
   Exclude:
     - 'spec/features/**/*'
@@ -181,14 +178,12 @@ RSpec/MultipleExpectations:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/**/*'
-
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
 Style/NumericPredicate:
   Exclude:
     - 'spec/**/*'
 
-Rails/OutputSafety:
-  Exclude:
-    - 'app/helpers/yaml_helper.rb'
 Capybara/FeatureMethods:
   Exclude:
     - 'spec/features/**/*'

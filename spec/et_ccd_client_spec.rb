@@ -1,5 +1,6 @@
 RSpec.describe EtCcdClient do
-  subject(:mod) { EtCcdClient }
+  subject(:mod) { described_class }
+
   it "has a version number" do
     expect(EtCcdClient::VERSION).not_to be nil
   end

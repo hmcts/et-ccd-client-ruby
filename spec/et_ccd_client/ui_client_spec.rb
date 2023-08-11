@@ -40,9 +40,10 @@ RSpec.describe EtCcdClient::UiClient do
   describe "#initialize" do
     it 'has correct default values for injected services' do
       class_double('::EtCcdClient::UiIdamClient', new: mock_idam_client).as_stubbed_const
-      expect(::EtCcdClient).to receive(:config).and_return(mock_config)
+      allow(::EtCcdClient).to receive(:config).and_return(mock_config)
 
       described_class.new
+      expect(::EtCcdClient).to have_received(:config)
     end
   end
 
@@ -75,7 +76,6 @@ RSpec.describe EtCcdClient::UiClient do
     end
   end
 
-
   describe "#caseworker_search_by_reference" do
     let(:reference) { "123456789012" }
     let(:response_for_empty_collection) do
@@ -86,7 +86,7 @@ RSpec.describe EtCcdClient::UiClient do
     let(:response_for_one_entry) do
       {
         'results' => [
-          {'anything' => 'goes'}
+          { 'anything' => 'goes' }
         ]
       }
     end
@@ -100,6 +100,7 @@ RSpec.describe EtCcdClient::UiClient do
         "path": "/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases"
       }
     end
+
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:get, "http://gateway.mock.com/aggregated/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases").
@@ -153,8 +154,6 @@ RSpec.describe EtCcdClient::UiClient do
       expect(mock_logger).to have_received(:debug).with(start_with("ET > Caseworker search by reference (#{url}"))
     end
 
-
-
     it "re raises the response with the response body available under error conditions with detailed message" do
       # Arrange - stub the url
       resp_body = response_for_error.to_json
@@ -191,6 +190,7 @@ RSpec.describe EtCcdClient::UiClient do
       end
     end
   end
+
   describe "#caseworker_search_by_ethos_case_reference" do
     let(:reference) { "123456789012" }
     let(:response_for_empty_collection) do
@@ -201,7 +201,7 @@ RSpec.describe EtCcdClient::UiClient do
     let(:response_for_one_entry) do
       {
         'results' => [
-          {'anything' => 'goes'}
+          { 'anything' => 'goes' }
         ]
       }
     end
@@ -215,6 +215,7 @@ RSpec.describe EtCcdClient::UiClient do
         "path": "/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases"
       }
     end
+
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:get, "http://gateway.mock.com/aggregated/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases").
@@ -304,6 +305,7 @@ RSpec.describe EtCcdClient::UiClient do
       end
     end
   end
+
   describe "#caseworker_search_by_multiple_reference" do
     let(:reference) { "123456789012" }
     let(:response_for_empty_collection) do
@@ -314,7 +316,7 @@ RSpec.describe EtCcdClient::UiClient do
     let(:response_for_one_entry) do
       {
         'results' => [
-          {'anything' => 'goes'}
+          { 'anything' => 'goes' }
         ]
       }
     end
@@ -328,6 +330,7 @@ RSpec.describe EtCcdClient::UiClient do
         "path": "/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases"
       }
     end
+
     it "performs the correct http request" do
       # Arrange - stub the url
       stub = stub_request(:get, "http://gateway.mock.com/aggregated/caseworkers/mockuserid/jurisdictions/mockjid/case-types/mycasetypeid/cases").
@@ -437,15 +440,4 @@ RSpec.describe EtCcdClient::UiClient do
     end
   end
 
-  describe "#caseworker_search_by_reference" do
-
-  end
-
-  describe "#caseworker_search_latest_by_reference" do
-
-  end
-
-  describe "#caseworker_cases_pagination_metadata" do
-
-  end
 end
