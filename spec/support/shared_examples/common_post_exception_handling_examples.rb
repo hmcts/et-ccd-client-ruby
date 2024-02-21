@@ -24,6 +24,20 @@ RSpec.shared_examples "common POST exception handling examples" do
     end
   end
 
+  it 're raises the exception with a conflict when a 409 is received' do
+    # Arrange - stub the url
+    resp_body = '{"message": "Conflict"}'
+    stub_request(:post, url).
+      to_return(body: resp_body, status: 409)
+
+    # Act and Assert
+    aggregate_failures "Exception should be raised" do
+      expect(action).to raise_error(EtCcdClient::Exceptions::Conflict) do |error|
+        expect(error.message).to include("Conflict")
+      end
+    end
+  end
+
   it "re raises the response with the response body available under error conditions with standard message" do
     # Arrange - stub the url
     resp_body = '{"message": "Unauthorized"}'
